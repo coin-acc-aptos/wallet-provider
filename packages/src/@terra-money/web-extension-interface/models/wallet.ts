@@ -15,6 +15,11 @@ export interface WebExtensionWalletInfo {
   addresses: Record<string, string>;
 
   /**
+   * Legacy wallet address
+   */
+  terraAddress?: string;
+
+  /**
    * Wallet design
    * 1. some theme name (terra, anchor...)
    * 2. color hex (#ffffff, #000000...)

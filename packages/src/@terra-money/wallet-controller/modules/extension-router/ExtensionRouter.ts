@@ -218,9 +218,7 @@ export class ExtensionRouter {
       throw new Error(`[ExtensionRouter] Wallet is not connected`);
     }
 
-    return this._connector.signBytes(
-      bytes,
-    );
+    return this._connector.signBytes(bytes);
   };
 
   hasCW20Tokens = (
@@ -289,8 +287,8 @@ export class ExtensionRouter {
       extensionInfo.connector
         ? Promise.resolve(extensionInfo.connector())
         : Promise.resolve(
-          new LegacyExtensionConnector(extensionInfo.identifier),
-        );
+            new LegacyExtensionConnector(extensionInfo.identifier),
+          );
 
     connectorPromise.then((connector) => {
       connector.open(this.options.hostWindow ?? window, {
@@ -315,12 +313,35 @@ export class ExtensionRouter {
           } else {
             this._states.next({
               type: ExtensionRouterStatus.WALLET_CONNECTED,
-              network: nextStates.network,
+              network:
+                'name' in nextStates.network
+                  ? {
+                      'phoenix-1': {
+                        lcd: 'https://phoenix-lcd.terra.dev',
+                        chainID: 'phoenix-1',
+                        gasPrices: { uluna: 0.015 },
+                        gasAdjustment: 1.75,
+                        prefix: 'terra',
+                      },
+                    }
+                  : nextStates.network,
               wallet: nextStates.focusedWalletAddress
-                ? nextStates.wallets.find(
-                  (itemWallet) =>
-                    Object.values(itemWallet.addresses).includes(nextStates.focusedWalletAddress ?? "")
-                ) ?? nextStates.wallets[0]
+                ? 'terraAddress' in nextStates.wallets[0]
+                  ? {
+                      name: nextStates.wallets[0].name,
+                      addresses: Object.fromEntries(
+                        ['phoenix-1', 'columbus-5', 'pisco-1'].map((n) => [
+                          n,
+                          nextStates.wallets[0].terraAddress as string,
+                        ]),
+                      ),
+                      design: nextStates.wallets[0].design,
+                    }
+                  : nextStates.wallets.find((itemWallet) => {
+                      return Object.values(itemWallet.addresses).includes(
+                        nextStates.focusedWalletAddress ?? '',
+                      );
+                    }) ?? nextStates.wallets[0]
                 : nextStates.wallets[0],
               connectorType:
                 connector instanceof LegacyExtensionConnector
@@ -334,7 +355,7 @@ export class ExtensionRouter {
         error: (error) => {
           console.error(error);
         },
-        complete: () => { },
+        complete: () => {},
       });
 
       this._connector = connector;

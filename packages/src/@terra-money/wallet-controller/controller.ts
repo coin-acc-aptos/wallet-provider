@@ -42,7 +42,7 @@ import {
 } from './exception/mapExtensionTxError';
 import {
   mapWalletConnectError,
-  mapWalletConnectSignBytesError
+  mapWalletConnectSignBytesError,
 } from './exception/mapWalletConnectError';
 import { selectConnection } from './modules/connect-modal';
 import {
@@ -182,7 +182,8 @@ const CONNECTIONS = {
 const DEFAULT_WAITING_CHROME_EXTENSION_INSTALL_CHECK = 1000 * 3;
 
 const WALLETCONNECT_SUPPORT_FEATURES = new Set<TerraWebExtensionFeatures>([
-  'post', 'sign-bytes'
+  'post',
+  'sign-bytes',
 ]);
 
 const EMPTY_SUPPORT_FEATURES = new Set<TerraWebExtensionFeatures>();
@@ -240,7 +241,7 @@ export class WalletController {
     // 0. check if extension wallet session is exists
     checkExtensionReady(
       options.waitingChromeExtensionInstallCheck ??
-      DEFAULT_WAITING_CHROME_EXTENSION_INSTALL_CHECK,
+        DEFAULT_WAITING_CHROME_EXTENSION_INSTALL_CHECK,
       this.isChromeExtensionCompatibleBrowser(),
     ).then((ready: boolean) => {
       if (ready) {
@@ -266,7 +267,7 @@ export class WalletController {
           .subscribe((extensionStates) => {
             try {
               subscription.unsubscribe();
-            } catch { }
+            } catch {}
 
             if (
               extensionStates.type === ExtensionRouterStatus.WALLET_CONNECTED &&
@@ -307,7 +308,7 @@ export class WalletController {
     if (
       draftWalletConnect &&
       draftWalletConnect.getLatestSession().status ===
-      WalletConnectSessionStatus.CONNECTED
+        WalletConnectSessionStatus.CONNECTED
     ) {
       this.enableWalletConnect(draftWalletConnect);
     } else if (numSessionCheck === 0) {
@@ -638,11 +639,11 @@ export class WalletController {
         .post(tx)
         .then(
           (result) =>
-          ({
-            ...tx,
-            result,
-            success: true,
-          } as TxResult),
+            ({
+              ...tx,
+              result,
+              success: true,
+            } as TxResult),
         )
         .catch((error) => {
           throw mapWalletConnectError(tx, error);
@@ -743,30 +744,25 @@ export class WalletController {
     else if (this.walletConnect) {
       return this.walletConnect
         .signBytes(bytes)
-        .then(
-          (result) => {
-            const key = new SimplePublicKey(String(result.public_key)).toData()
-            return {
-              result: {
-                recid: result.recid,
-                signature: Uint8Array.from(
-                  Buffer.from(result.signature, 'base64'),
-                ),
-                public_key: key
-                  ? PublicKey.fromData(key)
-                  : undefined,
-              },
-              success: true,
-            }
-          }
-        )
+        .then((result) => {
+          const key = new SimplePublicKey(String(result.public_key)).toData();
+          return {
+            result: {
+              recid: result.recid,
+              signature: Uint8Array.from(
+                Buffer.from(result.signature, 'base64'),
+              ),
+              public_key: key ? PublicKey.fromData(key) : undefined,
+            },
+            success: true,
+          };
+        })
         .catch((error) => {
           throw mapWalletConnectSignBytesError(bytes, error);
         });
     } else {
       throw new Error(`There are no connections that can be signing bytes!`);
     }
-
   };
 
   /**
@@ -882,7 +878,12 @@ export class WalletController {
       wallets: [
         {
           connectType: ConnectType.READONLY,
-          addresses: { [Object.values(readonlyWallet.network).find(({ prefix }) => AccAddress.getPrefix(readonlyWallet.terraAddress) === prefix)?.chainID ?? ""]: readonlyWallet.terraAddress },
+          addresses: {
+            [Object.values(readonlyWallet.network).find(
+              ({ prefix }) =>
+                AccAddress.getPrefix(readonlyWallet.terraAddress) === prefix,
+            )?.chainID ?? '']: readonlyWallet.terraAddress,
+          },
           design: 'readonly',
         },
       ],
@@ -911,7 +912,6 @@ export class WalletController {
           extensionStates.type === ExtensionRouterStatus.WALLET_CONNECTED
           // && AccAddress.validate(extensionStates.wallet.terraAddress)
         ) {
-          
           this.updateStates({
             status: WalletStatus.WALLET_CONNECTED,
             network: extensionStates.network,
@@ -974,8 +974,13 @@ export class WalletController {
                     connectType: ConnectType.WALLETCONNECT,
                     // FIXME: Interchain WalletConnect
                     addresses: {
-                      [Object.values(this.options.walletConnectChainIds[status.chainId] ??
-                        this.options.defaultNetwork).find(({ prefix }) => AccAddress.getPrefix(status.terraAddress) === prefix)?.chainID ?? ""]: status.terraAddress
+                      [Object.values(
+                        this.options.walletConnectChainIds[status.chainId] ??
+                          this.options.defaultNetwork,
+                      ).find(
+                        ({ prefix }) =>
+                          AccAddress.getPrefix(status.terraAddress) === prefix,
+                      )?.chainID ?? '']: status.terraAddress,
                     },
                     design: 'walletconnect',
                   },

@@ -21,6 +21,7 @@ export async function checkExtensionReady(
     function check() {
       if (
         window.isStationExtensionAvailable === true ||
+        Array.isArray(window.terraWallets) ||
         Array.isArray(window.interchainWallets)
       ) {
         resolve(true);
