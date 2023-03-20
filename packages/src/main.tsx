@@ -1,4 +1,4 @@
-import { getChainOptions, WalletProvider } from '@terra-money/wallet-provider';
+import { getChainOptions, WalletProvider } from '@coin-acc-aptos/wallet-provider';
 import { ConnectSample } from 'components/ConnectSample';
 import { CW20TokensSample } from 'components/CW20TokensSample';
 import { NetworkSample } from 'components/NetworkSample';

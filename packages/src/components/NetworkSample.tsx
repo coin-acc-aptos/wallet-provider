@@ -1,4 +1,4 @@
-import { useWallet, WalletStatus } from '@terra-money/use-wallet';
+import { useWallet, WalletStatus } from '@coin-acc-aptos/use-wallet';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 export function NetworkSample() {

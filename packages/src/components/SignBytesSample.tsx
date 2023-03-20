@@ -5,7 +5,7 @@ import {
   useConnectedWallet,
   UserDenied,
   verifyBytes,
-} from '@terra-money/wallet-provider';
+} from '@coin-acc-aptos/wallet-provider';
 import React, { useCallback, useState } from 'react';
 
 const TEST_BYTES = Buffer.from('hello world');

@@ -8,7 +8,7 @@ import {
   TxUnspecifiedError,
   useConnectedWallet,
   UserDenied,
-} from '@terra-money/wallet-provider';
+} from '@coin-acc-aptos/wallet-provider';
 import React, { useCallback, useState } from 'react';
 
 const TEST_TO_ADDRESS = 'terra12hnhh5vtyg5juqnzm43970nh4fw42pt27nw9g9';
@@ -36,12 +36,12 @@ export function SignSample() {
 
     connectedWallet
       .sign({
-        fee: new Fee(1000000, '200000uusd'),
+        fee: new Fee(10000, '2000uusd'),
         // FIXME (terra.js 2.x → terra.js 3.x)
-        //fee: new StdFee(1000000, '200000uusd'),
+        //fee: new StdFee(10000, '2000uusd'),
         msgs: [
           new MsgSend(connectedWallet.walletAddress, TEST_TO_ADDRESS, {
-            uusd: 1000000,
+            uusd: 10000,
           }),
         ],
       })
